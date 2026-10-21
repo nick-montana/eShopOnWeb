@@ -1,5 +1,8 @@
 # Microsoft eShopOnWeb ASP.NET Core Reference Application
 
+Forked repository from the community driven .NET sample application
+-- features an intelligent data pipeline for common enterprise use-cases
+
 This Microsoft reference application is now being maintained by [NimblePros](https://nimblepros.com/).
 
 If you're looking for the .NET Aspire eShop sample it's [here](https://github.com/dotnet/eShop). Microsoft also recommends the [Reliable Web App](https://learn.microsoft.com/azure/architecture/web-apps/guides/reliable-web-app/overview) patterns guidance for building web apps with enterprise app patterns.
