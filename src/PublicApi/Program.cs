@@ -59,6 +59,9 @@ builder.AddSeqEndpoint(connectionName: "seq", options =>
     options.ServerUrl = seqUrl;
 });
 
+builder.Services.Configure<OpenKitOptions>(
+    builder.Configuration.GetRequiredSection(OpenKitOptions.SectionName));
+
 var app = builder.Build();
 
 app.Logger.LogInformation("PublicApi App created...");
