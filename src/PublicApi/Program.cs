@@ -58,6 +58,8 @@ builder.AddSeqEndpoint(connectionName: "seq", options =>
 {
     options.ServerUrl = seqUrl;
 });
+var rumAgentConfig = builder.Configuration.GetRequiredSection(OpenKitOptions.SectionName);
+
 
 var app = builder.Build();
 

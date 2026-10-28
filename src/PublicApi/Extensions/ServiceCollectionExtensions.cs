@@ -1,4 +1,11 @@
-﻿using BlazorShared;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
+using BlazorShared;
+using BlazorShared.Interfaces;
+using Dynatrace.OpenKit;
+using Dynatrace.OpenKit.API;
+using Dynatrace.OpenKit.Core.Objects;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
@@ -13,11 +20,24 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
+using JsonValue = Dynatrace.OpenKit.Util.Json.Objects.JsonValue;
 
 namespace Microsoft.eShopWeb.PublicApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    // configures the openkit instance
+    public static void AddBusinessEventAgentServices(this IServiceCollection services,OpenKitOptions openKitOptions)
+    {
+        // to-do: get values from settings json
+        var endpointURL = "https://DESKTOP-GEQUNFQ:9999/mbeacon/hkh71453";
+        var applicationID = openKitOptions.ApplicationId;
+        IOpenKit openKit = new DynatraceOpenKitBuilder(endpointURL, applicationID, 123).Build();
+        var openKitSession = openKit.CreateSession();
+        BizeventAgent bizeventAgent = new BizeventAgent(openKit, openKitSession);
+        services.AddSingleton(bizeventAgent);
+    }
+    
     public static void AddCustomServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
@@ -98,5 +118,27 @@ public static class ServiceCollectionExtensions
             c.AutoTagPathSegmentIndex = 0;
             c.ShortSchemaNames = true;
         });
+    }
+}
+
+public class BizeventAgent : IBizeventExporter, IDisposable
+{
+    private IOpenKit openKitInstance;
+    private ISession session;
+
+    public BizeventAgent(IOpenKit openKitInstance, ISession session)
+    {
+        this.openKitInstance = openKitInstance;
+        this.session = session;
+    }
+    public void sendBizEvent(string eventName, Dictionary<string, JsonValue> data)
+    {
+        this.session.SendBizEvent(eventName, data);
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine($"{nameof(BizeventAgent)} disposed");
+        this.openKitInstance.Shutdown();
     }
 }
