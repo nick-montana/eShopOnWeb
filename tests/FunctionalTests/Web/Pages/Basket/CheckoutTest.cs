@@ -8,10 +8,7 @@ public class CheckoutTest : IClassFixture<TestApplication>
 {
     public CheckoutTest(TestApplication factory)
     {
-        Client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = true
-        });
+        Client = factory.CreateClient(allowAutoRedirect: true);
     }
 
     public HttpClient Client { get; }
@@ -43,7 +40,7 @@ public class CheckoutTest : IClassFixture<TestApplication>
         var loginResponse = await Client.GetAsync("/Identity/Account/Login", TestContext.Current.CancellationToken);
         var longinKeyValues = new List<KeyValuePair<string, string>>
         {
-           new("email", "demouser@microsoft.com"),
+           new("email", "demouser@eshop.test"),
            new("password", "Pass@word1"),
            new(WebPageHelpers.TokenTag, WebPageHelpers.GetRequestVerificationToken(await loginResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)))
         };
@@ -58,7 +55,7 @@ public class CheckoutTest : IClassFixture<TestApplication>
            new("Items[0].Quantity", "1"),
            new(WebPageHelpers.TokenTag, WebPageHelpers.GetRequestVerificationToken(loginStringResponse))
         };
-        var checkOutContent = new FormUrlEncodedContent(checkOutKeyValues);     
+        var checkOutContent = new FormUrlEncodedContent(checkOutKeyValues);
         var checkOutResponse = await Client.PostAsync("/basket/checkout", checkOutContent, TestContext.Current.CancellationToken);
         var stringCheckOutResponse = await checkOutResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 

@@ -13,7 +13,11 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// Creates a new Catalog Item
 /// </summary>
-public class CreateCatalogItemEndpoint(IRepository<CatalogItem> itemRepository, IUriComposer uriComposer)
+public class CreateCatalogItemEndpoint(
+    IRepository<CatalogItem> itemRepository,
+    IRepository<CatalogBrand> brandRepository,
+    IRepository<CatalogType> typeRepository,
+    IUriComposer uriComposer)
     : Endpoint<CreateCatalogItemRequest, CreateCatalogItemResponse>
 {
     public override void Configure()
@@ -30,9 +34,19 @@ public class CreateCatalogItemEndpoint(IRepository<CatalogItem> itemRepository, 
     {
         var response = new CreateCatalogItemResponse(request.CorrelationId());
 
+        if (await brandRepository.GetByIdAsync(request.CatalogBrandId, ct) == null)
+        {
+            AddError(r => r.CatalogBrandId, $"Catalog brand {request.CatalogBrandId} does not exist.");
+        }
+        if (await typeRepository.GetByIdAsync(request.CatalogTypeId, ct) == null)
+        {
+            AddError(r => r.CatalogTypeId, $"Catalog type {request.CatalogTypeId} does not exist.");
+        }
+        ThrowIfAnyErrors();
+
         var catalogItemNameSpecification = new CatalogItemNameSpecification(request.Name);
-        var existingCataloogItem = await itemRepository.CountAsync(catalogItemNameSpecification, ct);
-        if (existingCataloogItem > 0)
+        var existingCatalogItemCount = await itemRepository.CountAsync(catalogItemNameSpecification, ct);
+        if (existingCatalogItemCount > 0)
         {
             throw new DuplicateException($"A catalogItem with name {request.Name} already exists");
         }
@@ -62,6 +76,6 @@ public class CreateCatalogItemEndpoint(IRepository<CatalogItem> itemRepository, 
         };
         response.CatalogItem = dto;
 
-        await Send.CreatedAtAsync<CatalogItemGetByIdEndpoint>(new{ CatalogItemId = dto.Id }, response, cancellation: ct);
+        await Send.CreatedAtAsync<CatalogItemGetByIdEndpoint>(new { CatalogItemId = dto.Id }, response, cancellation: ct);
     }
 }

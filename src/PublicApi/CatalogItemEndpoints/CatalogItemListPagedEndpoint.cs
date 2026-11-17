@@ -13,8 +13,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// List Catalog Items (paged)
 /// </summary>
-public class CatalogItemListPagedEndpoint(IRepository<CatalogItem> itemRepository, IUriComposer uriComposer,
-        AutoMapper.IMapper mapper)
+public class CatalogItemListPagedEndpoint(IRepository<CatalogItem> itemRepository, IUriComposer uriComposer)
     : Endpoint<ListPagedCatalogItemRequest, ListPagedCatalogItemResponse>
 {
     public override void Configure()
@@ -28,8 +27,6 @@ public class CatalogItemListPagedEndpoint(IRepository<CatalogItem> itemRepositor
 
     public override async Task<ListPagedCatalogItemResponse> ExecuteAsync(ListPagedCatalogItemRequest request, CancellationToken ct)
     {
-        await Task.Delay(1000, ct);
-
         var response = new ListPagedCatalogItemResponse(request.CorrelationId());
 
         var filterSpec = new CatalogFilterSpecification(request.CatalogBrandId, request.CatalogTypeId);
@@ -43,20 +40,14 @@ public class CatalogItemListPagedEndpoint(IRepository<CatalogItem> itemRepositor
 
         var items = await itemRepository.ListAsync(pagedSpec, ct);
 
-        response.CatalogItems.AddRange(items.Select(mapper.Map<CatalogItemDto>));
+        response.CatalogItems.AddRange(items.Select(item => item.ToDto()));
         foreach (CatalogItemDto item in response.CatalogItems)
         {
             item.PictureUri = uriComposer.ComposePicUri(item.PictureUri);
         }
 
-        if (request.PageSize > 0)
-        {
-            response.PageCount = (int) Math.Ceiling((decimal)totalItems / request.PageSize);
-        }
-        else
-        {
-            response.PageCount = totalItems > 0 ? 1 : 0;
-        }
+        // The validator guarantees PageSize is between 1 and MaxPageSize.
+        response.PageCount = (int)Math.Ceiling((decimal)totalItems / request.PageSize);
 
         return response;
     }

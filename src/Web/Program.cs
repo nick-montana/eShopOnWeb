@@ -1,7 +1,7 @@
 ﻿using Ardalis.ListStartupServices;
+using FastEndpoints;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Infrastructure;
 using Microsoft.eShopWeb.Infrastructure.Identity;
@@ -56,25 +56,19 @@ builder.Services.AddWebServices(builder.Configuration);
 
 // Add memory cache services
 builder.Services.AddMemoryCache();
-builder.Services.AddRouting(options =>
-{
-    // Replace the type and the name used to refer to it with your own
-    // IOutboundParameterTransformer implementation
-    options.ConstraintMap["slugify"] = typeof(SlugifyParameterTransformer);
-});
-
-builder.Services.AddMvc(options =>
-{
-    options.Conventions.Add(new RouteTokenTransformerConvention(
-             new SlugifyParameterTransformer()));
-
-});
-builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizePage("/Basket/Checkout");
 });
 builder.Services.AddHttpContextAccessor();
+
+// API endpoints live in Endpoints/. Only scan this assembly: the default scans every loaded
+// assembly, which would also pick up PublicApi's endpoints when both are loaded (e.g. in tests).
+builder.Services.AddFastEndpoints(o =>
+{
+    o.DisableAutoDiscovery = true;
+    o.Assemblies = [typeof(Program).Assembly];
+});
 
 builder.Services.AddCustomHealthChecks();
 
@@ -121,10 +115,13 @@ app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<UserContextEnrichmentMiddleware>();
-app.MapControllerRoute("default", "{controller:slugify=Home}/{action:slugify=Index}/{id?}");
+app.UseFastEndpoints();
 app.MapRazorPages();
 app.MapHealthChecks("home_page_health_check", new HealthCheckOptions { Predicate = check => check.Tags.Contains("homePageHealthCheck") });
 app.MapHealthChecks("api_health_check", new HealthCheckOptions { Predicate = check => check.Tags.Contains("apiHealthCheck") });
+// Liveness only (the "self" check from the Aspire service defaults). The AppHost waits on it before
+// starting PublicApi, so it must not depend on PublicApi the way /health does.
+app.MapHealthChecks("/alive", new HealthCheckOptions { Predicate = check => check.Tags.Contains("live") });
 //endpoints.MapBlazorHub("/admin");
 app.MapFallbackToFile("index.html");
 

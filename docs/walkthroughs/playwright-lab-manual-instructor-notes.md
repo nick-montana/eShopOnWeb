@@ -42,7 +42,7 @@ Run these once before the session:
 
 ```powershell
 dotnet build tests/EndToEndTests/EndToEndTests.csproj
-pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 install
+pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 install
 ```
 
 Sanity check (should pass with one intentionally skipped demo test):
@@ -54,7 +54,7 @@ dotnet test tests/EndToEndTests/EndToEndTests.csproj
 Start the app for interactive codegen demos (separate terminal):
 
 ```powershell
-dotnet run --project src/Web/Web.csproj
+dotnet run --project src/Web/Web.csproj -- --UseOnlyInMemoryDatabase=true
 ```
 
 Keep this terminal running while you execute codegen steps.
@@ -83,13 +83,13 @@ Live steps:
 1. Ensure the app is running in a separate terminal:
 
 ```powershell
-dotnet run --project src/Web/Web.csproj
+dotnet run --project src/Web/Web.csproj -- --UseOnlyInMemoryDatabase=true
 ```
 
 1. Run codegen:
 
 ```powershell
-pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 codegen https://localhost:5001
+pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 codegen https://localhost:5001
 ```
 
 In the browser, perform:
@@ -149,7 +149,7 @@ dotnet test tests/EndToEndTests/EndToEndTests.csproj --filter FullyQualifiedName
 1. Open trace locally:
 
 ```powershell
-pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 show-trace TestResults/PlaywrightArtifacts/<folder>/trace.zip
+pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 show-trace TestResults/PlaywrightArtifacts/<folder>/trace.zip
 ```
 
 1. Or use hosted viewer at <https://trace.playwright.dev>.
@@ -247,13 +247,13 @@ gh issue comment <issue-number> --body-file <comment-file>.md
 
 ```powershell
 # Terminal 1 (keep running for codegen demos)
-dotnet run --project src/Web/Web.csproj
+dotnet run --project src/Web/Web.csproj -- --UseOnlyInMemoryDatabase=true
 
 # Terminal 2
 dotnet build tests/EndToEndTests/EndToEndTests.csproj
-pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 install
+pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 install
 dotnet test tests/EndToEndTests/EndToEndTests.csproj
-pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 codegen https://localhost:5001
+pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 codegen https://localhost:5001
 dotnet test tests/EndToEndTests/EndToEndTests.csproj --filter FullyQualifiedName~CatalogTests
 dotnet test tests/EndToEndTests/EndToEndTests.csproj --filter FullyQualifiedName~BasketTests.Cart_AddItem_ShowsExpectedTotal
 
@@ -273,7 +273,7 @@ After finishing interactive demos, stop the running app with Ctrl+C in Terminal 
 ## Common Pitfalls and Recovery
 
 1. Browser not installed:
-   - Re-run `pwsh tests/EndToEndTests/bin/Debug/net10.0/playwright.ps1 install`.
+   - Re-run `pwsh tests/EndToEndTests/bin/Debug/net11.0/playwright.ps1 install`.
 2. HTTPS/localhost issues:
    - Ensure app starts from test fixture and wait for startup.
 3. Flaky locator from generated code:

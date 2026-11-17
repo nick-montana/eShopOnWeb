@@ -19,7 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add service defaults & Aspire components.
 builder.AddAspireServiceDefaults();
 
-builder.Services.AddFastEndpoints();
+// Only scan this assembly. The default scans every referenced assembly, and one that can't be
+// type-loaded on the current runtime stops the host from starting (see issue #281).
+builder.Services.AddFastEndpoints(o =>
+{
+    o.DisableAutoDiscovery = true;
+    o.Assemblies = [typeof(Program).Assembly];
+});
 
 // Use to force loading of appsettings.json of test project
 builder.Configuration.AddConfigurationFile("appsettings.test.json");
@@ -45,9 +51,6 @@ var baseUrlConfig = configSection.Get<BaseUrlConfiguration>();
 builder.Services.AddCorsPolicy(CORS_POLICY, baseUrlConfig!);
 
 builder.Services.AddControllers();
-
-// TODO: Consider removing AutoMapper dependency (FastEndpoints already has its own Mapper support)
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddSwagger();
 

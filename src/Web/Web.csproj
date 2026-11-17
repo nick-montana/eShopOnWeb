@@ -17,9 +17,9 @@
     <PackageReference Include="Ardalis.Specification" />
     <PackageReference Include="Aspire.Seq" />
     <PackageReference Include="AspNetCore.Security.OAuth.Extensions" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />
     <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="FastEndpoints" />
     <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Mediator.SourceGenerator">
       <PrivateAssets>all</PrivateAssets>
@@ -41,15 +41,6 @@
     </PackageReference>
     <PackageReference Include="NimblePros.Metronome" />     
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />     
-    <PackageReference Include="System.Text.Encoding.Extensions" />
-    <PackageReference Include="System.Threading" />
-    <PackageReference Include="System.Runtime.InteropServices" />
-    <PackageReference Include="System.Runtime.Handles" />
-    <PackageReference Include="System.Net.Primitives" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" />
-    <PackageReference Include="System.IO.FileSystem" />
-    <PackageReference Include="System.Diagnostics.Debug" />
-    <PackageReference Include="System.Diagnostics.Tracing" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\fonts\" />
@@ -79,24 +70,6 @@
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\Shared\Error.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Shared\_Layout.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Shared\_LoginPartial.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Shared\_ValidationScriptsPartial.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\_ViewStart.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 </Project>

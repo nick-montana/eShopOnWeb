@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.eShopWeb;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.eShopWeb.PublicApi.UserManagementEndpoints.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PublicApiIntegrationTests.Helpers;
 
 namespace PublicApiIntegrationTests.UserManagementEndpoints;
@@ -43,7 +43,7 @@ public class DeleteUserEndpointTest
     public async Task ReturnsBadRequestTryingToDeleteAdminUser()
     {
         var client = HttpClientHelper.GetAdminClient();
-        var userName = "admin@microsoft.com";
+        var userName = "admin@eshop.test";
         var response = await client.GetAsync($"api/users/name/{userName}");
 
         var adminUserResponse = await response.Content.ReadAsStringAsync();

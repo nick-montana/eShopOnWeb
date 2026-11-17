@@ -12,7 +12,7 @@ Let's add a new feature to the site that will allow authenticated users to view 
 - Out for Delivery
 - Delivered
 
-The current version of the application lists "Pending" for every order - it's hard coded in the `OrderController` class for both the My Orders list action and the order details action.
+The current version of the application lists "Pending" for every order - it's hard coded in `OrderViewModel`, which both the My Orders page and the Order Detail page display.
 
 The My Orders action should simply list the correct status. The details page should display the status as well as a (simply calculated from order date) estimate of when the order will be delivered. Delivered orders should display the (calculated) date when they were delivered.
 
@@ -36,7 +36,7 @@ or
 Delivered today at 1645
 ```
 
-It's best to minimize logic in views and viewmodels, so we'll add the logic for these messages to the controller for now. Since all we have to work with at the moment are hard-coded status strings, we can create a simple helper method that uses a string as input, like this one:
+It's best to minimize logic in views and viewmodels, so we'll add the logic for these messages to the page model for now. Since all we have to work with at the moment are hard-coded status strings, we can create a simple helper method that uses a string as input, like this one:
 
 ```csharp
 private string GetDetailedStatus(string status)
@@ -76,7 +76,7 @@ In order to populate the ViewModel, we'll need to get the order status informati
 
 ## Update the Database
 
-Since we're using the EF Core InMemory database, we don't need to update the database just yet. When we're ready to test this with a real database, or before going to production, we would add new migrations using the instructions in [the project README](https://github.com/NimblePros/eShopOnWeb/blob/master/README.md) and then call dotnet ef database update with the appropriate arguments to apply the changes.
+Since we're using the EF Core InMemory database, we don't need to update the database just yet. When we're ready to test this with a real database, or before going to production, we would add new migrations using the instructions in [the project README](https://github.com/NimblePros/eShopOnWeb/blob/main/README.md#working-with-ef-core-migrations). The apps apply pending migrations when they start.
 
 ## Setting the Values
 
@@ -124,7 +124,7 @@ This will update the status from Pending 2/3 of the time based on the value of t
 
 ## Back to the UI
 
-Now that we have a Status property on Order, we need to use it in our UI code. Back in the OrderController class we need to set the Status property on the viewmodel to the Status property on the order, both in the MyOrders action and in the Detail action.
+Now that we have a Status property on Order, we need to use it in our UI code. Back in the web project we need to set the Status property on the viewmodel to the Status property on the order, in both the `GetMyOrdersHandler` and the `GetOrderDetailsHandler` Mediator handlers that the My Orders and Order Detail pages use.
 
 ```csharp
         Status = o.Status,
